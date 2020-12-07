@@ -10,9 +10,9 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "accountNumber")
+    @Column(name = "account_number")
     private String accountNumber;
-    @Column(name = "date")
+    @Column(name = "operation_date")
     private LocalDate date;
     @Column(name = "beneficiary")
     private String beneficiary;
@@ -24,6 +24,15 @@ public class Account {
     private String currency;
 
     public Account() {
+    }
+
+    public Account(String accountNumber, LocalDate date, String beneficiary, String comment, BigDecimal amount, String currency) {
+        this.accountNumber = accountNumber;
+        this.date = date;
+        this.beneficiary = beneficiary;
+        this.comment = comment;
+        this.amount = amount;
+        this.currency = currency;
     }
 
     public Account(Long id, String accountNumber, LocalDate date, String beneficiary, String comment, BigDecimal amount, String currency) {
@@ -90,5 +99,17 @@ public class Account {
 
     public void setCurrency(String currency) {
         this.currency = currency;
+    }
+
+    @Override
+    public String toString() {
+        return "Account{" +
+                "accountNumber='" + accountNumber + '\'' +
+                ", date=" + date +
+                ", beneficiary='" + beneficiary + '\'' +
+                ", comment='" + comment + '\'' +
+                ", amount=" + amount +
+                ", currency='" + currency + '\'' +
+                '}';
     }
 }
