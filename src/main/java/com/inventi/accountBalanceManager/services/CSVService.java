@@ -1,18 +1,14 @@
 package com.inventi.accountBalanceManager.services;
 
+import com.inventi.accountBalanceManager.dto.BalanceDto;
 import com.inventi.accountBalanceManager.entity.Account;
 import com.inventi.accountBalanceManager.repository.AccountRepository;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.CSVRecord;
+import org.apache.commons.csv.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.List;
@@ -22,10 +18,13 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 
 @Service
 public class CSVService {
-    private static final String BANKSTATEMENTS_CSV_FILE = "./bankStatements.csv";
     private static final String[] HEADERS = {
             "accountNumber", "operationDate", "beneficiary", "comment", "amount", "currency"
     };
+    private static final CSVFormat format = CSVFormat.DEFAULT
+            .withHeader(HEADERS)
+            .withQuoteMode(QuoteMode.MINIMAL);
+    private static final String type = "text/csv";
 
     private final AccountRepository accountRepository;
 
@@ -34,7 +33,7 @@ public class CSVService {
     }
 
     public boolean hasCSVFormat(MultipartFile file) {
-        String type = "text/csv";
+
         return type.equals(file.getContentType());
     }
 
@@ -47,23 +46,22 @@ public class CSVService {
         }
     }
 
-    public void loadDataFromDBToCSVFile(LocalDate dateFrom, LocalDate dateTo) {
-        accountsToCSV(getAllAccountsInPeriod(dateFrom, dateTo));
+    public ByteArrayInputStream loadDataFromDBToCSVFile(LocalDate dateFrom, LocalDate dateTo) {
+        return accountsToCSV(getAllAccountsInPeriod(dateFrom, dateTo));
     }
 
-    public BigDecimal calculateAccountBalance(String accNumber, LocalDate dateFrom,
+    public BalanceDto calculateAccountBalance(String accNumber, LocalDate dateFrom,
                                               LocalDate dateTo) {
 
         List<Account> allAcounts = getAllAccountsInPeriod(dateFrom, dateTo);
-        return allAcounts.stream()
+        BalanceDto balanceDto = new BalanceDto();
+        balanceDto.setBalance(allAcounts.stream()
                 .filter(acc -> acc.getAccountNumber().equals(accNumber))
                 .map(Account::getAmount)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add));
+        return balanceDto;
     }
 
-    public List<Account> getAllAccounts() {
-        return accountRepository.findAll();
-    }
 
     private List<Account> csvToAccounts(InputStream inputStream) {
         try (BufferedReader fileReader = new BufferedReader(createInputStreamReader(inputStream));
@@ -102,18 +100,19 @@ public class CSVService {
                 csvRecord.get("currency"));
     }
 
-    private void accountsToCSV(List<Account> accounts) {
-        try (BufferedWriter writer = Files.newBufferedWriter(Paths.get(BANKSTATEMENTS_CSV_FILE));
-             CSVPrinter csvPrinter = createCSVPrinter(writer)) {
+    private ByteArrayInputStream accountsToCSV(List<Account> accounts) {
+        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+             CSVPrinter csvPrinter = createCSVPrinter(format, out)) {
             printingGivenValues(accounts, csvPrinter);
             csvPrinter.flush();
+            return new ByteArrayInputStream(out.toByteArray());
         } catch (IOException e) {
             throw new RuntimeException("fail to import data to CSV file " + e.getMessage());
         }
     }
 
-    private CSVPrinter createCSVPrinter(BufferedWriter writer) throws IOException {
-        return new CSVPrinter(writer, CSVFormat.DEFAULT.withHeader(HEADERS));
+    private CSVPrinter createCSVPrinter(CSVFormat format, ByteArrayOutputStream out) throws IOException {
+        return new CSVPrinter(new PrintWriter(out), format);
     }
 
     private void printingGivenValues(List<Account> accounts, CSVPrinter csvPrinter) throws IOException {
