@@ -1,4 +1,4 @@
-package com.inventi.accountBalanceManager.Entities;
+package com.inventi.accountBalanceManager.entity;
 
 import javax.persistence.*;
 import java.math.BigDecimal;
@@ -26,7 +26,8 @@ public class Account {
     public Account() {
     }
 
-    public Account(String accountNumber, LocalDate date, String beneficiary, String comment, BigDecimal amount, String currency) {
+    public Account(String accountNumber, LocalDate date, String beneficiary, String comment,
+                   BigDecimal amount, String currency) {
         this.accountNumber = accountNumber;
         this.date = date;
         this.beneficiary = beneficiary;
@@ -35,7 +36,8 @@ public class Account {
         this.currency = currency;
     }
 
-    public Account(Long id, String accountNumber, LocalDate date, String beneficiary, String comment, BigDecimal amount, String currency) {
+    public Account(Long id, String accountNumber, LocalDate date, String beneficiary, String comment,
+                   BigDecimal amount, String currency) {
         this.id = id;
         this.accountNumber = accountNumber;
         this.date = date;
