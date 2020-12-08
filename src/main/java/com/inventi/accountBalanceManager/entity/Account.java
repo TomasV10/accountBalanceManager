@@ -10,17 +10,17 @@ public class Account {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(name = "account_number")
+    @Column(name = "account_number", nullable = false)
     private String accountNumber;
-    @Column(name = "operation_date")
+    @Column(name = "operation_date", nullable = false)
     private LocalDate date;
-    @Column(name = "beneficiary")
+    @Column(name = "beneficiary", nullable = false)
     private String beneficiary;
     @Column(name = "comment")
     private String comment;
-    @Column(name = "amount")
+    @Column(name = "amount", nullable = false)
     private BigDecimal amount;
-    @Column(name = "currency")
+    @Column(name = "currency", nullable = false)
     private String currency;
 
     public Account() {
@@ -28,17 +28,6 @@ public class Account {
 
     public Account(String accountNumber, LocalDate date, String beneficiary, String comment,
                    BigDecimal amount, String currency) {
-        this.accountNumber = accountNumber;
-        this.date = date;
-        this.beneficiary = beneficiary;
-        this.comment = comment;
-        this.amount = amount;
-        this.currency = currency;
-    }
-
-    public Account(Long id, String accountNumber, LocalDate date, String beneficiary, String comment,
-                   BigDecimal amount, String currency) {
-        this.id = id;
         this.accountNumber = accountNumber;
         this.date = date;
         this.beneficiary = beneficiary;
