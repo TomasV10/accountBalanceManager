@@ -21,10 +21,10 @@ public class CSVService {
     private static final String[] HEADERS = {
             "accountNumber", "operationDate", "beneficiary", "comment", "amount", "currency"
     };
-    private static final CSVFormat format = CSVFormat.DEFAULT
+    private static final CSVFormat FORMAT = CSVFormat.DEFAULT
             .withHeader(HEADERS)
             .withQuoteMode(QuoteMode.MINIMAL);
-    private static final String type = "text/csv";
+    private static final String TYPE = "text/csv";
 
     private final AccountRepository accountRepository;
 
@@ -34,7 +34,7 @@ public class CSVService {
 
     public boolean hasCSVFormat(MultipartFile file) {
 
-        return type.equals(file.getContentType());
+        return TYPE.equals(file.getContentType());
     }
 
     public void saveCSVDataToDB(MultipartFile file) {
@@ -102,7 +102,7 @@ public class CSVService {
 
     private ByteArrayInputStream accountsToCSV(List<Account> accounts) {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-             CSVPrinter csvPrinter = createCSVPrinter(format, out)) {
+             CSVPrinter csvPrinter = createCSVPrinter(out)) {
             printingGivenValues(accounts, csvPrinter);
             csvPrinter.flush();
             return new ByteArrayInputStream(out.toByteArray());
@@ -111,8 +111,8 @@ public class CSVService {
         }
     }
 
-    private CSVPrinter createCSVPrinter(CSVFormat format, ByteArrayOutputStream out) throws IOException {
-        return new CSVPrinter(new PrintWriter(out), format);
+    private CSVPrinter createCSVPrinter(ByteArrayOutputStream out) throws IOException {
+        return new CSVPrinter(new PrintWriter(out), FORMAT);
     }
 
     private void printingGivenValues(List<Account> accounts, CSVPrinter csvPrinter) throws IOException {
