@@ -2,6 +2,7 @@
 
 # 1 step
 Run application (AccountBalanceManagerApplication file)
+
 H2 - in memory Database is used, no need additional setup, just run the application
 
 # 2 step
@@ -9,17 +10,23 @@ H2 - in memory Database is used, no need additional setup, just run the applicat
 Import yourBankStatements.csv file 
 
 Enter request URL: http://localhost:8080/api/import (POST)
+
 In Postman, "Body" section, choose form-data, set KEY: file, type: file, value: select YourBankStatements.csv file
 
 # 3 step
 
 Export csv for given dates period, enter URL in your browser: http://localhost:8080/api/export?dateFrom=2020-12-01&dateTo=2020-12-10
+
 to download bankStatements.csv file for given dates period. 
+
 *dateFrom and *dateTo are optionals.
 
-#4 step
+# 4 step
+
 To calculate balance use: http://localhost:8080/api/balance?accNumber=GB94BARC10201530093459&dateFrom=2020-12-07&dateTo=2020-12-08 (GET)
+
 *accNumber is mandatory
+
 *dateFrom and *dateTo are optionals.
 
 # My bankStatements.csv file
